@@ -2,18 +2,24 @@ package com.group_5.le6;
 
 // Authors: Agapito, Virtucio
 
+import java.io.IOException;
+import java.util.Optional;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.io.IOException;
-import java.util.Optional;
 
 public class StudentController {
     @FXML
@@ -35,7 +41,7 @@ public class StudentController {
     @FXML
     private TextField courseField;
 
-    private ObservableList<Student> students = FXCollections.observableArrayList();
+    private final ObservableList<Student> students = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {

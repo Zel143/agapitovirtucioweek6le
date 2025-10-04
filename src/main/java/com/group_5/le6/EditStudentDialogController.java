@@ -26,4 +26,8 @@ public class EditStudentDialogController {
         emailField.textProperty().bindBidirectional(student.emailProperty());
         courseField.textProperty().bindBidirectional(student.courseProperty());
     }
+
+    public Student getStudent() {
+        return student;
+    }
 }
