@@ -4,6 +4,7 @@ package com.group_5.le6;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import java.util.regex.Pattern;
 
 public class Student {
     private final StringProperty id;
@@ -68,5 +69,32 @@ public class Student {
 
     public void setCourse(String course) {
         this.course.set(course);
+    }
+
+    // Validation methods
+    public static boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        return Pattern.compile(emailRegex).matcher(email.trim()).matches();
+    }
+
+    public static boolean isValidId(String id) {
+        if (id == null || id.trim().isEmpty()) {
+            return false;
+        }
+        // ID should be 3-10 characters, alphanumeric
+        String idRegex = "^[A-Za-z0-9]{3,10}$";
+        return Pattern.compile(idRegex).matcher(id.trim()).matches();
+    }
+
+    public static boolean isValidName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return false;
+        }
+        // Name should be 2-50 characters, letters and spaces only
+        String nameRegex = "^[A-Za-z\\s]{2,50}$";
+        return Pattern.compile(nameRegex).matcher(name.trim()).matches();
     }
 }

@@ -1,0 +1,4 @@
+001|John Doe|2025-10-04|Late
+003|Lian Agapito|2025-10-04|Present
+002|Jane Smith|2025-10-04|Absent
+004|Luigi Ariola|2025-10-04|Absent

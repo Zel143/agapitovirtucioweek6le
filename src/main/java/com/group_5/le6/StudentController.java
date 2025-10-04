@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -40,8 +41,11 @@ public class StudentController {
     private TextField emailField;
     @FXML
     private TextField courseField;
+    @FXML
+    private TextField searchField;
 
     private final ObservableList<Student> students = FXCollections.observableArrayList();
+    private FilteredList<Student> filteredStudents;
 
     @FXML
     public void initialize() {
@@ -50,28 +54,78 @@ public class StudentController {
         emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
         courseColumn.setCellValueFactory(new PropertyValueFactory<>("course"));
 
-        studentTable.setItems(students);
+        // Set up filtered list for search functionality
+        filteredStudents = new FilteredList<>(students, p -> true);
+        studentTable.setItems(filteredStudents);
 
-        // Add some sample data
-        students.add(new Student("001", "John Doe", "john@example.com", "Computer Science"));
-        students.add(new Student("002", "Jane Smith", "jane@example.com", "Information Technology"));
+        // Add search listener
+        if (searchField != null) {
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                filteredStudents.setPredicate(student -> {
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
+                    String lowerCaseFilter = newValue.toLowerCase();
+                    return student.getId().toLowerCase().contains(lowerCaseFilter)
+                            || student.getName().toLowerCase().contains(lowerCaseFilter)
+                            || student.getEmail().toLowerCase().contains(lowerCaseFilter)
+                            || student.getCourse().toLowerCase().contains(lowerCaseFilter);
+                });
+            });
+        }
+
+        // Load saved data
+        loadStudentsFromFile();
+        
+        // If no saved data, add sample data
+        if (students.isEmpty()) {
+            students.add(new Student("001", "John Doe", "john@example.com", "Computer Science"));
+            students.add(new Student("002", "Jane Smith", "jane@example.com", "Information Technology"));
+            saveStudentsToFile();
+        }
     }
 
     @FXML
     private void handleAdd() {
-        String id = idField.getText();
-        String name = nameField.getText();
-        String email = emailField.getText();
-        String course = courseField.getText();
+        String id = idField.getText().trim();
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
+        String course = courseField.getText().trim();
 
+        // Comprehensive validation
+        StringBuilder errors = new StringBuilder();
+        
         if (id.isEmpty() || name.isEmpty() || email.isEmpty() || course.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Validation Error", "Please fill in all fields.");
+            errors.append("All fields are required.\n");
+        }
+        
+        if (!Student.isValidId(id)) {
+            errors.append("ID must be 3-10 alphanumeric characters.\n");
+        } else if (isDuplicateId(id)) {
+            errors.append("A student with this ID already exists.\n");
+        }
+        
+        if (!Student.isValidName(name)) {
+            errors.append("Name must be 2-50 characters, letters and spaces only.\n");
+        }
+        
+        if (!Student.isValidEmail(email)) {
+            errors.append("Please enter a valid email address.\n");
+        }
+        
+        if (course.trim().isEmpty()) {
+            errors.append("Course cannot be empty.\n");
+        }
+
+        if (errors.length() > 0) {
+            showAlert(Alert.AlertType.ERROR, "Validation Error", errors.toString().trim());
             return;
         }
 
         Student student = new Student(id, name, email, course);
         students.add(student);
-
+        saveStudentsToFile();
+        showAlert(Alert.AlertType.INFORMATION, "Success", "Student added successfully!");
         clearFields();
     }
 
@@ -95,9 +149,28 @@ public class StudentController {
             dialog.setTitle("Edit Student");
             dialog.initModality(Modality.APPLICATION_MODAL);
 
+            // Add validation before closing dialog
+            dialogPane.lookupButton(ButtonType.OK).addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
+                if (!controller.validateInput()) {
+                    event.consume(); // Prevent dialog from closing
+                    return;
+                }
+                
+                // Check for duplicate ID (excluding current student)
+                String newId = selectedStudent.getId();
+                String originalId = controller.getOriginalId();
+                
+                if (!newId.equals(originalId) && isDuplicateId(newId)) {
+                    showAlert(Alert.AlertType.ERROR, "Duplicate ID", "A student with this ID already exists.");
+                    event.consume(); // Prevent dialog from closing
+                }
+            });
+
             Optional<ButtonType> result = dialog.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 studentTable.refresh();
+                saveStudentsToFile();
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Student updated successfully!");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -121,6 +194,8 @@ public class StudentController {
         Optional<ButtonType> result = confirmAlert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             students.remove(selectedStudent);
+            saveStudentsToFile();
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Student deleted successfully!");
         }
     }
 
@@ -143,6 +218,26 @@ public class StudentController {
         nameField.clear();
         emailField.clear();
         courseField.clear();
+        if (searchField != null) {
+            searchField.clear();
+        }
+    }
+
+    private boolean isDuplicateId(String id) {
+        return students.stream().anyMatch(student -> student.getId().equalsIgnoreCase(id));
+    }
+
+    private void saveStudentsToFile() {
+        DataManager.saveStudents(students);
+    }
+
+    private void loadStudentsFromFile() {
+        students.clear();
+        students.addAll(DataManager.loadStudents());
+    }
+
+    public ObservableList<Student> getStudents() {
+        return students;
     }
 
     private void showAlert(Alert.AlertType type, String title, String message) {

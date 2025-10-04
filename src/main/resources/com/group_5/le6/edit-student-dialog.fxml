@@ -25,7 +25,7 @@
     </content>
 
     <buttonTypes>
-        <ButtonType text="OK" fx:id="okButton" ButtonBar.ButtonData="OK_DONE"/>
-        <ButtonType text="Cancel" fx:id="cancelButton" ButtonBar.ButtonData="CANCEL_CLOSE"/>
+        <ButtonType text="OK" fx:id="okButton" buttonData="OK_DONE"/>
+        <ButtonType text="Cancel" fx:id="cancelButton" buttonData="CANCEL_CLOSE"/>
     </buttonTypes>
 </DialogPane>

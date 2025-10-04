@@ -1,0 +1,4 @@
+001|John Doe|john@example.com|Computer Science
+002|Jane Smith|jane@example.com|Information Technology
+003|Lian Agapito|lianagapito@gmail.com|Information Technology
+004|Luigi Ariola|luigiariola@gmail.com|Computer Science
