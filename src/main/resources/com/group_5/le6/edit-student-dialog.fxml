@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.group_5.le6.EditStudentDialogController">
+    
+    <content>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <Label text="Student ID:"/>
+            <TextField fx:id="idField" promptText="Enter ID"/>
+
+            <Label text="Name:"/>
+            <TextField fx:id="nameField" promptText="Enter Name"/>
+
+            <Label text="Email:"/>
+            <TextField fx:id="emailField" promptText="Enter Email"/>
+
+            <Label text="Course:"/>
+            <TextField fx:id="courseField" promptText="Enter Course"/>
+        </VBox>
+    </content>
+
+    <buttonTypes>
+        <ButtonType text="OK" fx:id="okButton" ButtonBar.ButtonData="OK_DONE"/>
+        <ButtonType text="Cancel" fx:id="cancelButton" ButtonBar.ButtonData="CANCEL_CLOSE"/>
+    </buttonTypes>
+</DialogPane>
