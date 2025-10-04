@@ -149,32 +149,40 @@ public class StudentController {
             dialog.setTitle("Edit Student");
             dialog.initModality(Modality.APPLICATION_MODAL);
 
-            // Add validation before closing dialog
-            dialogPane.lookupButton(ButtonType.OK).addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
-                if (!controller.validateInput()) {
-                    event.consume(); // Prevent dialog from closing
-                    return;
-                }
-                
-                // Check for duplicate ID (excluding current student)
-                String newId = selectedStudent.getId();
-                String originalId = controller.getOriginalId();
-                
-                if (!newId.equals(originalId) && isDuplicateId(newId)) {
-                    showAlert(Alert.AlertType.ERROR, "Duplicate ID", "A student with this ID already exists.");
-                    event.consume(); // Prevent dialog from closing
-                }
-            });
+            // Find the OK button and add validation
+            javafx.scene.Node okButton = dialogPane.lookupButton(ButtonType.OK);
+            if (okButton != null) {
+                okButton.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
+                    // Only validate if user actually made changes
+                    if (!controller.hasChanges()) {
+                        return; // No changes, allow dialog to close
+                    }
+                    
+                    if (!controller.validateInputSilently()) {
+                        event.consume(); // Prevent dialog from closing
+                        return;
+                    }
+                    
+                    // Check for duplicate ID (excluding current student)
+                    String newId = selectedStudent.getId();
+                    String originalId = controller.getOriginalId();
+                    
+                    if (!newId.equals(originalId) && isDuplicateId(newId)) {
+                        showAlert(Alert.AlertType.ERROR, "Duplicate ID", "A student with this ID already exists.");
+                        event.consume(); // Prevent dialog from closing
+                    }
+                });
+            }
 
             Optional<ButtonType> result = dialog.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 studentTable.refresh();
                 saveStudentsToFile();
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Student updated successfully!");
+                // Removed success notification to reduce interruptions
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open edit dialog.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to open edit dialog: " + e.getMessage());
         }
     }
 

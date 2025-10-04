@@ -68,9 +68,9 @@ public class EditStudentDialogController {
         }
 
         if (errors.length() > 0) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Validation Error");
-            alert.setHeaderText(null);
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Input Validation");
+            alert.setHeaderText("Please correct the following:");
             alert.setContentText(errors.toString().trim());
             alert.showAndWait();
             return false;
@@ -81,5 +81,58 @@ public class EditStudentDialogController {
 
     public String getOriginalId() {
         return originalStudent.getId();
+    }
+
+    public boolean hasChanges() {
+        String currentId = idField.getText().trim();
+        String currentName = nameField.getText().trim();
+        String currentEmail = emailField.getText().trim();
+        String currentCourse = courseField.getText().trim();
+        
+        return !currentId.equals(originalStudent.getId()) ||
+               !currentName.equals(originalStudent.getName()) ||
+               !currentEmail.equals(originalStudent.getEmail()) ||
+               !currentCourse.equals(originalStudent.getCourse());
+    }
+
+    public boolean validateInputSilently() {
+        String id = idField.getText().trim();
+        String name = nameField.getText().trim();
+        String email = emailField.getText().trim();
+        String course = courseField.getText().trim();
+
+        StringBuilder errors = new StringBuilder();
+        
+        if (id.isEmpty() || name.isEmpty() || email.isEmpty() || course.isEmpty()) {
+            errors.append("All fields are required.\n");
+        }
+        
+        if (!Student.isValidId(id)) {
+            errors.append("ID must be 3-10 alphanumeric characters.\n");
+        }
+        
+        if (!Student.isValidName(name)) {
+            errors.append("Name must be 2-50 characters, letters and spaces only.\n");
+        }
+        
+        if (!Student.isValidEmail(email)) {
+            errors.append("Please enter a valid email address.\n");
+        }
+        
+        if (course.trim().isEmpty()) {
+            errors.append("Course cannot be empty.\n");
+        }
+
+        if (errors.length() > 0) {
+            // Show a less intrusive error message
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Please Check Your Input");
+            alert.setHeaderText(null);
+            alert.setContentText(errors.toString().trim());
+            alert.showAndWait();
+            return false;
+        }
+        
+        return true;
     }
 }
