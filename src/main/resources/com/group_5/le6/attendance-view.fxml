@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.group_5.le6.AttendanceController"
+      spacing="20" style="-fx-padding: 40; -fx-alignment: center;">
+
+    <Label text="Attendance System" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <VBox spacing="10" style="-fx-max-width: 300px;">
+        <Label text="Username:"/>
+        <TextField fx:id="usernameField" promptText="Enter username"/>
+
+        <Label text="Password:"/>
+        <PasswordField fx:id="passwordField" promptText="Enter password"/>
+
+        <HBox spacing="10" style="-fx-alignment: center;">
+            <Button text="Login" onAction="#handleLogin" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-padding: 10 20;"/>
+            <Button text="Back to Students" onAction="#handleBackToStudents" style="-fx-background-color: #9E9E9E; -fx-text-fill: white; -fx-padding: 10 20;"/>
+        </HBox>
+    </VBox>
+
+    <Label text="Default credentials: admin / admin" style="-fx-font-size: 12px; -fx-text-fill: gray;"/>
+</VBox>
